@@ -2,7 +2,15 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class AuthService {
-  signup() {}
+  signup() {
+    return {
+      msg: 'user signed up',
+    };
+  }
 
-  signin() {}
+  signin() {
+    return {
+      msg: 'user signed in',
+    };
+  }
 }
