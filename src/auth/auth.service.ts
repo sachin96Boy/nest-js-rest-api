@@ -7,7 +7,7 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class AuthService {
-  constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService) {}
   async signup(dto: AuthDto) {
     // generate password hash
 
