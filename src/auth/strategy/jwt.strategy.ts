@@ -7,7 +7,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 @Injectable()
 export class JWTStrategy extends PassportStrategy(Strategy) {
   constructor(
-    private config: ConfigService,
+    config: ConfigService,
     private prisma: PrismaService,
   ) {
     super({
@@ -16,10 +16,10 @@ export class JWTStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: any) {
+  async validate(payload: { sub: number; email: string }) {
     const user = await this.prisma.user.findUnique({
       where: {
-        id: payload.id,
+        id: payload.sub,
         email: payload.email,
       },
     });
@@ -27,6 +27,7 @@ export class JWTStrategy extends PassportStrategy(Strategy) {
     if (!user) {
       throw new UnauthorizedException();
     }
+    delete user.password;
     return user;
   }
 }
