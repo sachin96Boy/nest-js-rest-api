@@ -4,10 +4,16 @@ import { AuthDto } from './dto';
 
 import * as argon2 from 'argon2';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private jwtService: JwtService,
+    private config: ConfigService,
+  ) {}
   async signup(dto: AuthDto) {
     // generate password hash
 
@@ -32,8 +38,8 @@ export class AuthService {
       return user;
     } catch (err) {
       if (err instanceof PrismaClientKnownRequestError) {
-        if (err.code === 'p2002') {
-          ('Credentials already Taken');
+        if (err.code === 'P2002') {
+          throw new ForbiddenException('Credentials already Taken');
         }
       }
       throw err;
@@ -63,8 +69,16 @@ export class AuthService {
       throw new ForbiddenException('Passwords do not match');
     }
 
-    // send back the user
-    delete user.password;
-    return user;
+    const payLoad = {
+      sub: user.id,
+      useremail: user.email,
+    };
+
+    return {
+      access_token: await this.jwtService.signAsync(payLoad, {
+        expiresIn: '2d',
+        secret: this.config.get('JWT_SECRET'),
+      }),
+    };
   }
 }
