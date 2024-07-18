@@ -1,10 +1,8 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthDto } from './dto';
-import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
-@UseGuards(AuthGuard('jwt'))
 export class AuthController {
   constructor(private authService: AuthService) {}
 
